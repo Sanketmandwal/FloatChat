@@ -1,6 +1,5 @@
 import React, { useState, useEffect, useContext } from 'react';
 import { useNavigate } from 'react-router';
-import { Button } from './ui/button';
 import Header from './Header';
 import { AppContext } from '@/context/AppContext';
 import { toast } from 'react-toastify';
@@ -12,8 +11,9 @@ const Login = () => {
   const [isLoading, setIsLoading] = useState(false);
   const [showPassword, setShowPassword] = useState(false);
   const [mousePos, setMousePos] = useState({ x: 0, y: 0 });
-  const navigate = useNavigate()
-  const { backendUrl, setToken } = useContext(AppContext)
+  const navigate = useNavigate();
+  const { backendUrl, setToken } = useContext(AppContext);
+
   useEffect(() => {
     const handleMouseMove = (e) => {
       setMousePos({ x: e.clientX, y: e.clientY });
@@ -23,29 +23,25 @@ const Login = () => {
   }, []);
 
   const handleSubmit = async (e) => {
-
     e.preventDefault();
     setIsLoading(true);
-    // Simulate login process
+    
     try {
-      const response = await axios.post(`${backendUrl}/api/user/login`, { password, email })
+      const response = await axios.post(`${backendUrl}/api/user/login`, { password, email });
       const data = response.data;
 
       if (data.success) {
-        localStorage.setItem('token', data.token)
-        setToken(data.token)
-        navigate('/')
+        localStorage.setItem('token', data.token);
+        setToken(data.token);
+        navigate('/');
+      } else {
+        toast.error(data.message);
       }
-      else {
-        toast.error(data.message)
-      }
-
     } catch (error) {
-      toast.error(error.response?.data?.message || error.message)
+      toast.error(error.response?.data?.message || error.message);
+    } finally {
+      setIsLoading(false);
     }
-
-    await new Promise(resolve => setTimeout(resolve, 2000));
-    setIsLoading(false);
   };
 
   const bubbles = Array.from({ length: 15 }, (_, i) => (
@@ -146,7 +142,7 @@ const Login = () => {
               </div>
 
               {/* Form */}
-              <div className="space-y-6">
+              <form onSubmit={handleSubmit} className="space-y-6">
                 {/* Email Field */}
                 <div className="relative group">
                   <div className="absolute inset-y-0 left-0 pl-4 flex items-center pointer-events-none">
@@ -158,6 +154,7 @@ const Login = () => {
                     onChange={(e) => setEmail(e.target.value)}
                     className="w-full pl-14 pr-4 py-4 bg-white/10 border border-white/20 rounded-2xl text-white placeholder-blue-200 focus:outline-none focus:ring-2 focus:ring-cyan-400 focus:border-transparent transition-all duration-300 backdrop-blur-sm group-hover:bg-white/15"
                     placeholder="Email Address"
+                    autoComplete="email"
                     required
                   />
                   <div className="absolute inset-0 rounded-2xl bg-gradient-to-r from-cyan-500/20 to-blue-500/20 opacity-0 group-hover:opacity-100 transition-opacity duration-300 pointer-events-none"></div>
@@ -174,6 +171,7 @@ const Login = () => {
                     onChange={(e) => setPassword(e.target.value)}
                     className="w-full pl-14 pr-14 py-4 bg-white/10 border border-white/20 rounded-2xl text-white placeholder-blue-200 focus:outline-none focus:ring-2 focus:ring-cyan-400 focus:border-transparent transition-all duration-300 backdrop-blur-sm group-hover:bg-white/15"
                     placeholder="Password"
+                    autoComplete="current-password"
                     required
                   />
                   <button
@@ -192,19 +190,20 @@ const Login = () => {
                     <input type="checkbox" className="mr-2 accent-cyan-400" />
                     Remember me
                   </label>
-                  <a href="#" className="text-cyan-300 hover:text-white transition-colors underline-offset-4 hover:underline">
+                  <button type="button" className="text-cyan-300 hover:text-white transition-colors underline-offset-4 hover:underline">
                     Forgot password?
-                  </a>
+                  </button>
                 </div>
 
                 {/* Submit Button */}
                 <button
-                  onClick={handleSubmit}
+                  type="submit"
                   disabled={isLoading}
-                  className={`w-full py-4 px-6 rounded-2xl font-semibold text-white text-lg transition-all duration-300 relative overflow-hidden group ${isLoading
+                  className={`w-full py-4 px-6 rounded-2xl font-semibold text-white text-lg transition-all duration-300 relative overflow-hidden group ${
+                    isLoading
                       ? 'bg-gray-600 cursor-not-allowed'
                       : 'bg-gradient-to-r from-cyan-500 to-blue-600 hover:from-cyan-400 hover:to-blue-500 shadow-lg hover:shadow-xl transform hover:-translate-y-1 active:translate-y-0'
-                    }`}
+                  }`}
                 >
                   <div className="absolute inset-0 bg-gradient-to-r from-cyan-400 to-blue-500 opacity-0 group-hover:opacity-100 transition-opacity duration-300"></div>
                   <div className="relative flex items-center justify-center">
@@ -222,45 +221,22 @@ const Login = () => {
                   </div>
                   <div className="absolute inset-0 rounded-2xl bg-white/10 transform scale-x-0 group-hover:scale-x-100 transition-transform duration-300 origin-left"></div>
                 </button>
-              </div>
-
-              {/* Divider */}
-              {/* <div className="flex items-center my-8">
-              <div className="flex-1 border-t border-white/20"></div>
-              <span className="px-4 text-blue-200 text-sm">or continue with</span>
-              <div className="flex-1 border-t border-white/20"></div>
-            </div> */}
-
-              {/* Social Buttons */}
-              {/* <div className="flex space-x-4">
-              <button className="flex-1 py-3 px-4 bg-white/10 hover:bg-white/20 border border-white/20 rounded-xl text-white transition-all duration-300 hover:transform hover:-translate-y-1">
-                <span className="text-2xl">🌐</span>
-              </button>
-              <button className="flex-1 py-3 px-4 bg-white/10 hover:bg-white/20 border border-white/20 rounded-xl text-white transition-all duration-300 hover:transform hover:-translate-y-1">
-                <span className="text-2xl">📱</span>
-              </button>
-              <button className="flex-1 py-3 px-4 bg-white/10 hover:bg-white/20 border border-white/20 rounded-xl text-white transition-all duration-300 hover:transform hover:-translate-y-1">
-                <span className="text-2xl">💼</span>
-              </button>
-            </div> */}
+              </form>
 
               {/* Sign Up Link */}
               <div className="text-center mt-8">
                 <p className="text-blue-200">
                   New to Ocean Portal?{' '}
-                  <button onClick={() => navigate("/signup")} href="#" className="text-cyan-300 hover:text-white transition-colors underline-offset-4 hover:underline font-semibold">
+                  <button 
+                    type="button" 
+                    onClick={() => navigate("/signup")} 
+                    className="text-cyan-300 hover:text-white transition-colors underline-offset-4 hover:underline font-semibold"
+                  >
                     Create Account
                   </button>
                 </p>
               </div>
             </div>
-
-            {/* Footer */}
-            {/* <div className="text-center mt-8">
-            <p className="text-blue-300 text-sm">
-              🌊 Powered by Ocean Waves • Privacy Policy • Terms
-            </p>
-          </div> */}
           </div>
         </div>
 
@@ -280,12 +256,12 @@ const Login = () => {
           ))}
         </div>
 
-        <style jsx>{`
-        @keyframes float {
-          0%, 100% { transform: translateY(0px) rotate(0deg); }
-          50% { transform: translateY(-20px) rotate(180deg); }
-        }
-      `}</style>
+        <style jsx="true">{`
+          @keyframes float {
+            0%, 100% { transform: translateY(0px) rotate(0deg); }
+            50% { transform: translateY(-20px) rotate(180deg); }
+          }
+        `}</style>
       </div>
     </>
   );
