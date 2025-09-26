@@ -7,7 +7,7 @@ export const AppContext = createContext();
 
 const AppContextProvider = (props) => {
 
-    const backendUrl = import.meta.env.VITE_BACKEND_URL
+    const backendUrl = 'https://floatchat-backend-e41p.onrender.com'
     const [token, setToken] = useState(localStorage.getItem('token') ? localStorage.getItem('token') : '')
   
     const [userData, setUserData] = useState(false)
